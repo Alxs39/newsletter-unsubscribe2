@@ -24,4 +24,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   DATABASE_URL: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for authentication
+  |----------------------------------------------------------
+  */
+  APP_URL: Env.schema.string.optional(),
 })
