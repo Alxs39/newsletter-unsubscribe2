@@ -11,18 +11,18 @@
     "test": "node ace test",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "imports": {
-    "#controllers/*": "./app/modules/**/*.controllers/*.js",
+    "#modules/*": "./app/modules/*.js",
     "#exceptions/*": "./app/exceptions/*.js",
-    "#models/*": "./app/modules/**/*.models/*.js",
     "#mails/*": "./app/mails/*.js",
-    "#services/*": "./app/modules/**/*.services/*.js",
     "#listeners/*": "./app/listeners/*.js",
     "#events/*": "./app/events/*.js",
     "#middleware/*": "./app/middleware/*.js",
-    "#validators/*": "./app/modules/**/*.validators/*.js",
     "#providers/*": "./providers/*.js",
     "#policies/*": "./app/policies/*.js",
     "#abilities/*": "./app/abilities/*.js",
@@ -41,11 +41,14 @@
     "@swc/core": "1.11.24",
     "@types/luxon": "^3.7.1",
     "@types/node": "^22.15.18",
+    "@types/pg": "^8.16.0",
+    "drizzle-kit": "^0.31.8",
     "eslint": "^9.26.0",
     "hot-hook": "^0.4.0",
     "pino-pretty": "^13.0.0",
     "prettier": "^3.5.3",
     "ts-node-maintained": "^10.9.5",
+    "tsx": "^4.21.0",
     "typescript": "~5.8"
   },
   "dependencies": {
@@ -54,6 +57,8 @@
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/lucid": "^21.6.1",
     "@vinejs/vine": "^3.0.1",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.45.1",
     "luxon": "^3.7.2",
     "pg": "^8.17.1",
     "reflect-metadata": "^0.2.2"
