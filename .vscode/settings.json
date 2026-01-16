@@ -1,0 +1,58 @@
+{
+  // ============================================================================
+  // ESLint Configuration
+  // ============================================================================
+  "eslint.enable": true,
+  "eslint.useFlatConfig": true,
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
+  // ============================================================================
+  // Editor Settings
+  // ============================================================================
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  // ============================================================================
+  // Language-specific Settings
+  // ============================================================================
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  // ============================================================================
+  // File Associations
+  // ============================================================================
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  // ============================================================================
+  // TypeScript Settings
+  // ============================================================================
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  // ============================================================================
+  // Disable Conflicting Features
+  // ============================================================================
+  "editor.formatOnPaste": false,
+  "prettier.enable": false
+}
