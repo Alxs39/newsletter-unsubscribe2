@@ -1,24 +1,24 @@
-import { user } from '#modules/user/user.schema'
-import { relations } from 'drizzle-orm'
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm';
+import { pgTable, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { users } from '../user/user.schema.js';
 
-export const session = pgTable('session', {
-  id: text('id').primaryKey(),
-  expiresAt: timestamp('expires_at').notNull(),
-  token: text('token').notNull().unique(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-  ipAddress: text('ip_address'),
-  userAgent: text('user_agent'),
-  userId: text('user_id')
-    .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
-})
+export const sessions = pgTable('session', {
+  id: varchar({ length: 32 }).primaryKey(),
+  userId: varchar({ length: 32 })
+    .references(() => users.id)
+    .notNull(),
+  token: varchar({ length: 255 }).notNull(),
+  expiresAt: timestamp({ withTimezone: true }).notNull(),
+  ipAddress: varchar({ length: 45 }),
+  userAgent: varchar({ length: 255 }),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  deletedAt: timestamp({ withTimezone: true }),
+});
 
-// Relation: une session appartient à un user
-export const sessionRelations = relations(session, ({ one }) => ({
-  user: one(user, {
-    fields: [session.userId],
-    references: [user.id],
+export const sessionRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
   }),
-}))
+}));

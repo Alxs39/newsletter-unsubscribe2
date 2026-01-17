@@ -1,29 +1,29 @@
-import { user } from '#modules/user/user.schema'
-import { relations } from 'drizzle-orm'
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { users } from '../user/user.schema.js';
+import { relations } from 'drizzle-orm';
 
-export const account = pgTable('account', {
-  id: text('id').primaryKey(),
-  accountId: text('account_id').notNull(),
-  providerId: text('provider_id').notNull(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
-  accessToken: text('access_token'),
-  refreshToken: text('refresh_token'),
-  idToken: text('id_token'),
-  accessTokenExpiresAt: timestamp('access_token_expires_at'),
-  refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
-  scope: text('scope'),
-  password: text('password'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+export const accounts = pgTable('account', {
+  id: varchar({ length: 32 }).primaryKey(),
+  userId: varchar({ length: 32 })
+    .references(() => users.id)
+    .notNull(),
+  accountId: varchar({ length: 32 }).notNull(),
+  providerId: varchar({ length: 255 }).notNull(),
+  accessToken: varchar({ length: 255 }),
+  refreshToken: varchar({ length: 255 }),
+  accessTokenExpiresAt: timestamp({ withTimezone: true }),
+  refreshTokenExpiresAt: timestamp({ withTimezone: true }),
+  scopes: varchar({ length: 1024 }),
+  idToken: text(),
+  password: varchar({ length: 255 }),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  deletedAt: timestamp({ withTimezone: true }),
+});
 
-// Relation: un account appartient à un user
-export const accountRelations = relations(account, ({ one }) => ({
-  user: one(user, {
-    fields: [account.userId],
-    references: [user.id],
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
   }),
-}))
+}));

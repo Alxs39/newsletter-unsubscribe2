@@ -1,9 +1,9 @@
-import { configApp as adonisConfig } from '@adonisjs/eslint-config'
-import prettierPlugin from 'eslint-plugin-prettier/recommended'
-import reactHooks from 'eslint-plugin-react-hooks'
-import jsxA11y from 'eslint-plugin-jsx-a11y'
-import js from '@eslint/js'
-import tseslint from 'typescript-eslint'
+import { configApp as adonisConfig } from '@adonisjs/eslint-config';
+import prettierPlugin from 'eslint-plugin-prettier/recommended';
+import reactHooks from 'eslint-plugin-react-hooks';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
 
 export default [
   js.configs.recommended,
@@ -131,4 +131,4 @@ export default [
   },
 
   prettierPlugin,
-]
+];

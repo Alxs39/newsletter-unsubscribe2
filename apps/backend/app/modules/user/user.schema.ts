@@ -1,20 +1,20 @@
-import { session } from '#modules/session/session.schema'
-import { account } from '#modules/account/account.schema'
-import { relations } from 'drizzle-orm'
-import { pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm';
+import { pgTable, timestamp, boolean, varchar } from 'drizzle-orm/pg-core';
+import { accounts } from '../account/account.schema.js';
+import { sessions } from '../session/session.schema.js';
 
-export const user = pgTable('user', {
-  id: text('id').primaryKey(),
-  name: text('name').notNull(),
-  email: text('email').notNull().unique(),
-  emailVerified: boolean('email_verified').notNull().default(false),
-  image: text('image'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+export const users = pgTable('user', {
+  id: varchar({ length: 32 }).primaryKey(),
+  name: varchar({ length: 255 }).notNull(),
+  email: varchar({ length: 255 }).notNull().unique(),
+  emailVerified: boolean().notNull(),
+  image: varchar({ length: 2048 }),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  deletedAt: timestamp({ withTimezone: true }),
+});
 
-// Relations: un user a plusieurs sessions et accounts
-export const userRelations = relations(user, ({ many }) => ({
-  sessions: many(session),
-  accounts: many(account),
-}))
+export const userRelations = relations(users, ({ many }) => ({
+  accounts: many(accounts),
+  sessions: many(sessions),
+}));

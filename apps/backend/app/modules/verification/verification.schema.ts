@@ -1,10 +1,11 @@
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import { pgTable, timestamp, varchar } from 'drizzle-orm/pg-core';
 
-export const verification = pgTable('verification', {
-  id: text('id').primaryKey(),
-  identifier: text('identifier').notNull(),
-  value: text('value').notNull(),
-  expiresAt: timestamp('expires_at').notNull(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-})
+export const verifications = pgTable('verification', {
+  id: varchar({ length: 32 }).primaryKey(),
+  identifier: varchar({ length: 255 }).notNull(),
+  value: varchar({ length: 255 }).notNull(),
+  expiresAt: timestamp({ withTimezone: true }).notNull(),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  deletedAt: timestamp({ withTimezone: true }),
+});

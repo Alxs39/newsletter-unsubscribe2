@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import { Tabs } from '@heroui/react'
-import { Mail } from 'lucide-react'
-import { usePathname } from 'next/navigation'
+import { Tabs } from '@heroui/react';
+import { Mail } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 export default function Header() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
-  const selectedKey = pathname === '/settings' ? 'settings' : 'dashboard'
+  const selectedKey = pathname === '/settings' ? 'settings' : 'dashboard';
 
   return (
     <header className="w-9/12 mx-auto flex justify-between items-center min-h-24">
@@ -30,5 +30,5 @@ export default function Header() {
         </Tabs.ListContainer>
       </Tabs>
     </header>
-  )
+  );
 }

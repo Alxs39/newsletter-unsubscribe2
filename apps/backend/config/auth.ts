@@ -1,21 +1,72 @@
-import { betterAuth } from 'better-auth'
-import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import env from '#start/env'
-import { db } from '#database/db'
-import * as schema from '#database/schema'
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import env from '#start/env';
+import { db } from '#database/db';
+import * as schema from '#database/schema';
 
 export const auth = betterAuth({
+  appName: env.get('APP_NAME'),
+  baseURL: env.get('BASE_URL'),
+  basePath: '/api/auth',
+  trustedOrigins: [env.get('FRONTEND_URL')],
+  secret: env.get('APP_KEY'),
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema,
   }),
   emailAndPassword: {
     enabled: true,
+    disableSignUp: false,
+    requireEmailVerification: false,
+    minPasswordLength: 8,
+    maxPasswordLength: 128,
+    autoSignIn: true,
   },
-  baseURL: env.get('APP_URL', 'http://localhost:3333'),
-  secret: env.get('APP_KEY'),
-  trustedOrigins:
-    env.get('NODE_ENV') === 'development'
-      ? ['http://localhost:3000', 'http://127.0.0.1:3000']
-      : [env.get('FRONTEND_URL', 'http://localhost:3000')],
-})
+  user: {
+    modelName: 'users',
+    changeEmail: {
+      enabled: false,
+    },
+  },
+  session: {
+    modelName: 'sessions',
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 15, // 15 minutes
+    disableSessionRefresh: true,
+    storeSessionInDatabase: true,
+    preserveSessionInDatabase: false,
+    cookieCache: {
+      enabled: true,
+      maxAge: 60 * 5, // 5 minutes
+    },
+  },
+  account: {
+    modelName: 'accounts',
+    encryptOAuthTokens: true,
+    storeAccountCookie: true,
+    accountLinking: {
+      enabled: false,
+    },
+  },
+  verification: {
+    modelName: 'verifications',
+    disableCleanup: false,
+  },
+  rateLimit: {
+    enabled: true,
+    window: 10,
+    max: 100,
+    storage: 'memory',
+    modelName: 'rateLimit',
+  },
+  advanced: {
+    useSecureCookies: true,
+    disableCSRFCheck: false,
+    disableOriginCheck: false,
+    defaultCookieAttributes: {
+      httpOnly: true,
+      secure: true,
+    },
+    cookiePrefix: 'newsletter_unsubscribe',
+  },
+});

@@ -1,5 +1,5 @@
-import { defineConfig } from '@adonisjs/cors'
-import env from '#start/env'
+import { defineConfig } from '@adonisjs/cors';
+import env from '#start/env';
 
 /**
  * Configuration options to tweak the CORS policy. The following
@@ -18,6 +18,6 @@ const corsConfig = defineConfig({
   exposeHeaders: [],
   credentials: true,
   maxAge: 90,
-})
+});
 
-export default corsConfig
+export default corsConfig;
