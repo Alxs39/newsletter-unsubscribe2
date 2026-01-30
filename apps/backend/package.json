@@ -29,7 +29,9 @@
     "#database/*": "./database/*.js",
     "#start/*": "./start/*.js",
     "#tests/*": "./tests/*.js",
-    "#config/*": "./config/*.js"
+    "#config/*": "./config/*.js",
+    "#types/*": "./types/*.js",
+    "#services/*": "./app/services/*.js"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.2",
@@ -61,6 +63,7 @@
     "@vinejs/vine": "^3.0.1",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
+    "imapflow": "^1.2.6",
     "luxon": "^3.7.2",
     "pg": "^8.17.1",
     "reflect-metadata": "^0.2.2"
