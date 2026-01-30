@@ -111,6 +111,14 @@ export default [
     },
   })),
 
+  // Désactiver explicit-function-return-type pour les fichiers de routes (lazy imports AdonisJS)
+  {
+    files: ['apps/backend/**/routes.ts', 'apps/backend/**/routes/*.ts'],
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 'off',
+    },
+  },
+
   {
     files: ['apps/frontend/**/*.{js,jsx,ts,tsx}'],
     plugins: {
