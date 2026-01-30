@@ -1,0 +1,1 @@
+ALTER TABLE "provider_account" ALTER COLUMN "password" SET DATA TYPE varchar(500);

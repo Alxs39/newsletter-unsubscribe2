@@ -6,7 +6,21 @@
       "idx": 0,
       "version": "7",
       "when": 1768653126792,
-      "tag": "20260117123206_mighty_synch",
+      "tag": "20260117123206_better_auth_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1769015637273,
+      "tag": "20260121171357_create_provider_account_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1769016473330,
+      "tag": "20260121172753_fast_skrulls",
       "breakpoints": true
     }
   ]
