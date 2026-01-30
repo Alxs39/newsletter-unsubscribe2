@@ -1,24 +1,40 @@
 import type { ApplicationService } from '@adonisjs/core/types';
+import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import * as schema from '#database/schema';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import env from '#start/env';
+import * as schema from '#database/schema';
 
-export default class DrizzleProvider {
-  constructor(protected app: ApplicationService) {}
-
-  /**
-   * Register bindings to the container
-   */
-  register(): void {
-    this.app.container.singleton('db', () => {
-      const db = drizzle(env.get('DATABASE_URL'), { schema });
-      return db;
-    });
-  }
-}
+export type DrizzleDatabase = NodePgDatabase<typeof schema>;
 
 declare module '@adonisjs/core/types' {
   interface ContainerBindings {
-    db: ReturnType<typeof drizzle<typeof schema>>;
+    db: DrizzleDatabase;
+  }
+}
+
+export default class DrizzleProvider {
+  private pool: Pool | null = null;
+
+  constructor(protected app: ApplicationService) {}
+
+  register(): void {
+    this.app.container.singleton('db', () => {
+      this.pool = new Pool({
+        connectionString: env.get('DATABASE_URL'),
+        max: 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000,
+      });
+
+      return drizzle(this.pool, { schema });
+    });
+  }
+
+  async shutdown(): Promise<void> {
+    if (this.pool) {
+      await this.pool.end();
+      this.pool = null;
+    }
   }
 }
