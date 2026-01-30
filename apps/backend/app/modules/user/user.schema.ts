@@ -1,7 +1,8 @@
 import { relations } from 'drizzle-orm';
 import { pgTable, timestamp, boolean, varchar } from 'drizzle-orm/pg-core';
-import { accounts } from '../account/account.schema.js';
-import { sessions } from '../session/session.schema.js';
+import { accounts } from '#modules/account/account.schema';
+import { sessions } from '#modules/session/session.schema';
+import { providerAccounts } from '#modules/provider_account/provider_account.schema';
 
 export const users = pgTable('user', {
   id: varchar({ length: 32 }).primaryKey(),
@@ -17,4 +18,5 @@ export const users = pgTable('user', {
 export const userRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
+  providerAccounts: many(providerAccounts),
 }));

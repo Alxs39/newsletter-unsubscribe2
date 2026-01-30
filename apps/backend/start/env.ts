@@ -34,4 +34,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   APP_URL: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for encryption (provider accounts)
+  |----------------------------------------------------------
+  */
+  ENCRYPTION_KEY: Env.schema.string(),
 });

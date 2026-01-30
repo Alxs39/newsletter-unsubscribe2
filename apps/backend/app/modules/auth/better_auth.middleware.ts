@@ -1,8 +1,8 @@
+import app from '@adonisjs/core/services/app';
 import { toNodeHandler } from 'better-auth/node';
 import env from '#start/env';
 import type { HttpContext } from '@adonisjs/core/http';
 import type { NextFn } from '@adonisjs/core/types/http';
-import { auth } from '#config/auth';
 
 const getAllowedOrigin = (requestOrigin: string | undefined): string => {
   const allowedOrigins =
@@ -25,12 +25,13 @@ export default class BetterAuthMiddleware {
     const { request, response } = ctx;
     const url = request.url();
 
-    // Only handle /api/auth/* routes
-    if (!url.startsWith('/api/auth')) {
+    // Only handle /auth/* routes
+    if (!url.startsWith('/auth')) {
       await next();
       return;
     }
 
+    const auth = await app.container.make('auth');
     const nodeHandler = toNodeHandler(auth);
     const req = request.request;
     const res = response.response;

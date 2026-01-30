@@ -1,5 +1,5 @@
 import { pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
-import { users } from '../user/user.schema.js';
+import { users } from '#modules/user/user.schema';
 import { relations } from 'drizzle-orm';
 
 export const accounts = pgTable('account', {
