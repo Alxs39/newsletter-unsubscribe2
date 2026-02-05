@@ -1,5 +1,5 @@
 import { inject } from '@adonisjs/core';
-import { and, eq, isNull, sql } from 'drizzle-orm';
+import { and, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { ImapFlow, FetchMessageObject } from 'imapflow';
 import db from '#services/db';
 import { ProviderAccountService } from '#modules/provider_account/provider_account_service';
@@ -124,10 +124,7 @@ export class SyncedEmailService {
       .select()
       .from(syncedEmails)
       .where(
-        and(
-          sql`${syncedEmails.providerAccountId} = ANY(${accountIds})`,
-          isNull(syncedEmails.deletedAt)
-        )
+        and(inArray(syncedEmails.providerAccountId, accountIds), isNull(syncedEmails.deletedAt))
       )
       .orderBy(syncedEmails.receivedAt);
   }
