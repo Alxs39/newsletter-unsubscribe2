@@ -4,5 +4,6 @@ export const createProviderAccountValidator = vine.compile(
   vine.object({
     email: vine.string().email(),
     password: vine.string(),
+    imapConfigId: vine.number().positive(),
   })
 );

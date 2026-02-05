@@ -2,6 +2,7 @@ import { pgTable, timestamp, varchar, serial, bigint, integer, boolean } from 'd
 import { relations } from 'drizzle-orm';
 import { users } from '#modules/user/user.schema';
 import { syncedEmails } from '#modules/synced_email/synced_email.schema';
+import { imapConfigs } from '#modules/imap_config/imap_config.schema';
 
 export const providerAccounts = pgTable('provider_account', {
   id: serial().primaryKey(),
@@ -9,6 +10,7 @@ export const providerAccounts = pgTable('provider_account', {
     .references(() => users.id)
     .notNull(),
   email: varchar({ length: 255 }).unique().notNull(),
+  imapConfigId: integer().references(() => imapConfigs.id),
   host: varchar({ length: 255 }).notNull(),
   port: integer().notNull(),
   useSsl: boolean().notNull(),
@@ -27,6 +29,10 @@ export const providerAccountsRelations = relations(providerAccounts, ({ one, man
   user: one(users, {
     fields: [providerAccounts.userId],
     references: [users.id],
+  }),
+  imapConfig: one(imapConfigs, {
+    fields: [providerAccounts.imapConfigId],
+    references: [imapConfigs.id],
   }),
   syncedEmails: many(syncedEmails),
 }));

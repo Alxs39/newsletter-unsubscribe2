@@ -6,35 +6,48 @@ import { EncryptionService } from '#services/encryption_service';
 import { providerAccounts } from '#modules/provider_account/provider_account.schema';
 import NotFoundError from '#errors/not_found_error';
 import CantConnectImapError from '#errors/cant_connect_imap_error';
+import ImapConfigService from '#modules/imap_config/imap_config_service';
 
 type ProviderAccount = typeof providerAccounts.$inferSelect;
 
 @inject()
 export class ProviderAccountService {
-  constructor(private encryption: EncryptionService) {}
+  constructor(
+    private readonly encryption: EncryptionService,
+    private readonly imapConfigService: ImapConfigService
+  ) {}
 
   async store({
     email,
     password,
     userId,
+    imapConfigId,
   }: {
     email: string;
     password: string;
     userId: string;
+    imapConfigId: number;
   }): Promise<void> {
-    const encryptedPassword = this.encryption.encrypt(password);
+    const config = await this.imapConfigService.findById(imapConfigId);
 
     await db.insert(providerAccounts).values({
       email,
-      password: encryptedPassword,
-      host: 'imap.mail.me.com',
-      port: 993,
-      useSsl: true,
+      password: this.encryption.encrypt(password),
+      imapConfigId,
+      host: config.host,
+      port: config.port,
+      useSsl: config.useSsl,
       userId,
     });
   }
 
-  async testImapConnection(credentials: {
+  async testImapConnection({
+    email,
+    password,
+    host,
+    port,
+    useSsl,
+  }: {
     email: string;
     password: string;
     host: string;
@@ -45,12 +58,12 @@ export class ProviderAccountService {
     lastModseq?: number | null;
   }): Promise<void> {
     const client = new ImapFlow({
-      host: credentials.host,
-      port: credentials.port,
-      secure: credentials.useSsl,
+      host,
+      port,
+      secure: useSsl,
       auth: {
-        user: credentials.email,
-        pass: credentials.password,
+        user: email,
+        pass: password,
       },
       logger: false,
     });
@@ -64,7 +77,7 @@ export class ProviderAccountService {
       }
       throw error;
     } finally {
-      client.close();
+      await client.logout();
     }
   }
 

@@ -3,8 +3,8 @@ import { and, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { ImapFlow, FetchMessageObject } from 'imapflow';
 import db from '#services/db';
 import { ProviderAccountService } from '#modules/provider_account/provider_account_service';
-import { syncedEmails } from './synced_email.schema.js';
-import CantConnectImapError from '../../errors/cant_connect_imap_error.js';
+import { syncedEmails } from '#modules/synced_email/synced_email.schema';
+import CantConnectImapError from '#errors/cant_connect_imap_error';
 import { EncryptionService } from '#services/encryption_service';
 
 type SyncedEmail = typeof syncedEmails.$inferSelect;

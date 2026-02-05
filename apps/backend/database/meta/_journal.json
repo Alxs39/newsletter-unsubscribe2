@@ -29,6 +29,13 @@
       "when": 1770275886172,
       "tag": "20260205071806_update_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1770288180859,
+      "tag": "20260205104300_create_imap_config_table",
+      "breakpoints": true
     }
   ]
 }

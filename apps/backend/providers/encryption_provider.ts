@@ -1,5 +1,5 @@
 import type { ApplicationService } from '@adonisjs/core/types';
-import { EncryptionService } from '../app/services/encryption_service.js';
+import { EncryptionService } from '#services/encryption_service';
 
 export default class EncryptionProvider {
   constructor(protected app: ApplicationService) {}
