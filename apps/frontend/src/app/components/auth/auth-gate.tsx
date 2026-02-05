@@ -2,8 +2,8 @@
 
 import { Card, Link, Separator } from '@heroui/react';
 import { useState } from 'react';
-import SignIn from '../auth/sign-in';
-import SignUp from '../auth/sign-up';
+import SignIn from './sign-in';
+import SignUp from './sign-up';
 
 type AuthMode = 'sign-in' | 'sign-up';
 
