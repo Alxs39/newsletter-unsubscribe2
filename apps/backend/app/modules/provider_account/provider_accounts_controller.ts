@@ -1,13 +1,11 @@
 import { inject } from '@adonisjs/core';
 import type { HttpContext } from '@adonisjs/core/http';
-import { createProviderAccountValidator } from './validators/provider_account.js';
-import { ProviderAccountService } from './provider_account_service.js';
+import { createProviderAccountValidator } from '#modules/provider_account/validators/provider_account';
+import { ProviderAccountService } from '#modules/provider_account/provider_account_service';
+import { providerAccounts } from '#modules/provider_account/provider_account.schema';
+import CantConnectImapError from '#errors/cant_connect_imap_error';
 
-function isAuthenticationFailure(error: unknown): boolean {
-  return (
-    error instanceof Error && 'authenticationFailed' in error && error.authenticationFailed === true
-  );
-}
+type ProviderAccount = typeof providerAccounts.$inferSelect;
 
 @inject()
 export default class ProviderAccountsController {
@@ -16,32 +14,28 @@ export default class ProviderAccountsController {
   async store({ request, user, response }: HttpContext): Promise<void> {
     const payload = await createProviderAccountValidator.validate(request.body());
 
-    const credentials = {
-      email: payload.email,
-      password: payload.password,
-      host: 'imap.mail.me.com',
-      port: 993,
-      useSsl: true,
-    };
-
     try {
-      await this.providerAccountService.testImapConnection(credentials);
+      await this.providerAccountService.testImapConnection({
+        email: payload.email,
+        password: payload.password,
+        host: 'imap.mail.me.com',
+        port: 993,
+        useSsl: true,
+      });
     } catch (error) {
-      if (isAuthenticationFailure(error)) {
+      if (error instanceof CantConnectImapError) {
         return response.unauthorized({ message: 'Invalid IMAP credentials' });
+      } else {
+        throw error;
       }
-      return response.badGateway({ message: 'Unable to connect to IMAP server' });
     }
 
-    // user is guaranteed by auth middleware
     const result = await this.providerAccountService.store({ ...payload, userId: user!.id });
 
     return response.created(result);
   }
 
-  async findAll({ user, response }: HttpContext): Promise<void> {
-    // user is guaranteed by auth middleware
-    const accounts = await this.providerAccountService.findByUserId(user!.id);
-    return response.ok(accounts);
+  async findAll({ user }: HttpContext): Promise<ProviderAccount[]> {
+    return await this.providerAccountService.findByUserId(user!.id);
   }
 }

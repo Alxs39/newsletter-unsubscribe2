@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
-    "db:generate": "NODE_OPTIONS='--import tsx' drizzle-kit generate",
+    "db:generate": "sh -c 'read -p \"Migration name: \" name && NODE_OPTIONS=\"--import tsx\" drizzle-kit generate --name \"$name\"'",
     "db:migrate": "NODE_OPTIONS='--import tsx' drizzle-kit migrate",
     "db:studio": "NODE_OPTIONS='--import tsx' drizzle-kit studio"
   },
@@ -31,7 +31,8 @@
     "#tests/*": "./tests/*.js",
     "#config/*": "./config/*.js",
     "#types/*": "./types/*.js",
-    "#services/*": "./app/services/*.js"
+    "#services/*": "./app/services/*.js",
+    "#errors/*": "./app/errors/*.js"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.2",

@@ -27,7 +27,7 @@ export default class DrizzleProvider {
         connectionTimeoutMillis: 2000,
       });
 
-      return drizzle(this.pool, { schema });
+      return drizzle({ client: this.pool, schema });
     });
   }
 

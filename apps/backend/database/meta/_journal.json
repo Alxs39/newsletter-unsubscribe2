@@ -20,7 +20,14 @@
       "idx": 2,
       "version": "7",
       "when": 1769016473330,
-      "tag": "20260121172753_fast_skrulls",
+      "tag": "20260121172753_alter_provider_account_password_column",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770275886172,
+      "tag": "20260205071806_update_schema",
       "breakpoints": true
     }
   ]

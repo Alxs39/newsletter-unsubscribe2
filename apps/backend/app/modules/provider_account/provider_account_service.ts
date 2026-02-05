@@ -1,19 +1,13 @@
 import { inject } from '@adonisjs/core';
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, eq, isNull, sql } from 'drizzle-orm';
 import { ImapFlow } from 'imapflow';
 import db from '#services/db';
 import { EncryptionService } from '#services/encryption_service';
-import { providerAccounts } from './provider_account.schema.js';
+import { providerAccounts } from '#modules/provider_account/provider_account.schema';
+import NotFoundError from '#errors/not_found_error';
+import CantConnectImapError from '#errors/cant_connect_imap_error';
 
 type ProviderAccount = typeof providerAccounts.$inferSelect;
-
-interface ImapCredentials {
-  email: string;
-  password: string;
-  host: string;
-  port: number;
-  useSsl: boolean;
-}
 
 @inject()
 export class ProviderAccountService {
@@ -34,13 +28,22 @@ export class ProviderAccountService {
       email,
       password: encryptedPassword,
       host: 'imap.mail.me.com',
-      port: '993',
-      useSsl: 'true',
+      port: 993,
+      useSsl: true,
       userId,
     });
   }
 
-  async testImapConnection(credentials: ImapCredentials): Promise<void> {
+  async testImapConnection(credentials: {
+    email: string;
+    password: string;
+    host: string;
+    port: number;
+    useSsl: boolean;
+    lastUidValidity?: number | null;
+    lastHighestUid?: number | null;
+    lastModseq?: number | null;
+  }): Promise<void> {
     const client = new ImapFlow({
       host: credentials.host,
       port: credentials.port,
@@ -52,23 +55,27 @@ export class ProviderAccountService {
       logger: false,
     });
 
-    await client.connect();
-    await client.logout();
+    try {
+      await client.connect();
+    } catch (error) {
+      const imapError = error as { code?: string };
+      if (imapError.code) {
+        throw new CantConnectImapError(imapError.code);
+      }
+      throw error;
+    } finally {
+      client.close();
+    }
   }
 
   async findByUserId(userId: string): Promise<ProviderAccount[]> {
-    const accounts = await db
+    return await db
       .select()
       .from(providerAccounts)
       .where(and(eq(providerAccounts.userId, userId), isNull(providerAccounts.deletedAt)));
-
-    return accounts.map((account: ProviderAccount) => {
-      const decryptedPassword = this.encryption.decrypt(account.password);
-      return { ...account, password: decryptedPassword };
-    });
   }
 
-  async findById(id: number, userId: string): Promise<ProviderAccount | null> {
+  async findById({ id, userId }: { id: number; userId: string }): Promise<ProviderAccount> {
     const [account] = await db
       .select()
       .from(providerAccounts)
@@ -78,29 +85,32 @@ export class ProviderAccountService {
           eq(providerAccounts.userId, userId),
           isNull(providerAccounts.deletedAt)
         )
-      );
+      )
+      .limit(1);
 
     if (!account) {
-      return null;
+      throw new NotFoundError();
     }
 
-    const decryptedPassword = this.encryption.decrypt(account.password);
-    return { ...account, password: decryptedPassword } as ProviderAccount;
+    return account;
   }
 
-  async getImapCredentials(id: number, userId: string): Promise<ImapCredentials | null> {
-    const account = await this.findById(id, userId);
-
-    if (!account) {
-      return null;
+  async updateSyncState(
+    id: number,
+    syncState: {
+      lastUidValidity: number | null;
+      lastHighestUid: number | null;
+      lastModseq?: number | null;
     }
-
-    return {
-      email: account.email,
-      password: account.password,
-      host: account.host,
-      port: Number.parseInt(account.port, 10),
-      useSsl: account.useSsl === 'true',
-    };
+  ): Promise<void> {
+    await db
+      .update(providerAccounts)
+      .set({
+        lastUidValidity: syncState.lastUidValidity,
+        lastHighestUid: syncState.lastHighestUid,
+        lastModseq: syncState.lastModseq ?? null,
+        lastSyncAt: sql`NOW()`,
+      })
+      .where(eq(providerAccounts.id, id));
   }
 }
