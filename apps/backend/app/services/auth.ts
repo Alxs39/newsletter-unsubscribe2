@@ -63,5 +63,5 @@ export const auth = betterAuth({
     disableCSRFCheck: false,
     cookiePrefix: 'newsletter_unsubscribe',
   },
-  plugins: [admin({ defaultRole: 'user' })],
+  plugins: [admin({ defaultRole: 'user', adminRoles: ['admin'] })],
 });

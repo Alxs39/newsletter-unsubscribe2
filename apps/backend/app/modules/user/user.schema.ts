@@ -1,8 +1,10 @@
 import { relations } from 'drizzle-orm';
-import { pgTable, timestamp, boolean, varchar } from 'drizzle-orm/pg-core';
+import { pgTable, timestamp, boolean, varchar, pgEnum } from 'drizzle-orm/pg-core';
 import { accounts } from '#modules/account/account.schema';
 import { sessions } from '#modules/session/session.schema';
 import { providerAccounts } from '#modules/provider_account/provider_account.schema';
+
+export const roleEnum = pgEnum('role', ['user', 'admin']);
 
 export const users = pgTable('user', {
   id: varchar({ length: 32 }).primaryKey(),
@@ -10,7 +12,7 @@ export const users = pgTable('user', {
   email: varchar({ length: 255 }).notNull().unique(),
   emailVerified: boolean().notNull(),
   image: varchar({ length: 2048 }),
-  role: varchar({ length: 50 }).notNull().default('user'),
+  role: roleEnum().notNull().default('user'),
   banned: boolean(),
   banReason: varchar({ length: 255 }),
   banExpires: timestamp({ withTimezone: true }),
