@@ -5,6 +5,7 @@ import apiClient from '../utils/api-clients';
 interface QueryOptions {
   url: string;
   enabled?: boolean;
+  refetchKey?: number;
 }
 
 interface QueryResult<TData> {
@@ -17,7 +18,7 @@ interface QueryResult<TData> {
 }
 
 export function useQuery<TData = unknown>(options: QueryOptions): QueryResult<TData> {
-  const { url, enabled = true } = options;
+  const { url, enabled = true, refetchKey } = options;
 
   const [data, setData] = useState<TData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +52,7 @@ export function useQuery<TData = unknown>(options: QueryOptions): QueryResult<TD
     if (enabled) {
       void fetchData();
     }
-  }, [enabled, fetchData]);
+  }, [enabled, fetchData, refetchKey]);
 
   return {
     data,

@@ -3,20 +3,15 @@
 import { Card } from '@heroui/react';
 import { Loader2, Mail, Server, Lock, LockOpen } from 'lucide-react';
 import { useQuery } from '../../hooks/useQuery';
+import { useInvalidation } from '../../hooks/useInvalidation';
 import type { ProviderAccount } from '../../types/provider-account.types';
 
-interface ProviderAccountsListProps {
-  onRefetch?: (refetch: () => Promise<void>) => void;
-}
-
-export default function ProviderAccountsList({ onRefetch }: ProviderAccountsListProps) {
-  const { data, isLoading, isError, refetch } = useQuery<ProviderAccount[]>({
+export default function ProviderAccountsList() {
+  const version = useInvalidation('provider-accounts');
+  const { data, isLoading, isError } = useQuery<ProviderAccount[]>({
     url: '/provider-accounts',
+    refetchKey: version,
   });
-
-  if (onRefetch) {
-    onRefetch(refetch);
-  }
 
   if (isLoading) {
     return (

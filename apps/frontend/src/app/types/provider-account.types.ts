@@ -4,6 +4,7 @@ export interface ProviderAccount {
   host: string;
   port: string;
   useSsl: string;
+  lastSyncAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

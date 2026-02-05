@@ -15,14 +15,11 @@ import {
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useMutation } from '../../hooks/useMutation';
+import { invalidate } from '../../hooks/useInvalidation';
 
 type ProviderAccountFields = 'email' | 'password';
 
-interface ImapFormProps {
-  onSuccess?: () => void;
-}
-
-export default function ImapForm({ onSuccess }: ImapFormProps) {
+export default function ImapForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -35,7 +32,7 @@ export default function ImapForm({ onSuccess }: ImapFormProps) {
     onSuccess: () => {
       setEmail('');
       setPassword('');
-      onSuccess?.();
+      invalidate('provider-accounts');
     },
   });
 
