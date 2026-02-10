@@ -13,7 +13,7 @@ const corsConfig = defineConfig({
     env.get('NODE_ENV') === 'development'
       ? ['http://localhost:3000', 'http://127.0.0.1:3000']
       : [env.get('FRONTEND_URL', 'http://localhost:3000')],
-  methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
   headers: true,
   exposeHeaders: [],
   credentials: true,

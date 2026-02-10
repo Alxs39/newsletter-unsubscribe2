@@ -16,6 +16,10 @@ type ImapConfig = typeof imapConfigs.$inferSelect;
 export default class ImapConfigsAdminController {
   constructor(private imapConfigService: ImapConfigService) {}
 
+  async list(): Promise<ImapConfig[]> {
+    return await this.imapConfigService.findAll();
+  }
+
   async create(ctx: HttpContext): Promise<void> {
     const { request, response } = secureAdmin(ctx);
     const payload = await createImapConfigValidator.validate(request.body());

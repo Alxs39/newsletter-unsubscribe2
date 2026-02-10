@@ -34,6 +34,7 @@ router
 // Admin routes
 router
   .group(() => {
+    router.get('/imap-configs', [ImapConfigsAdminController, 'list']);
     router.post('/imap-configs', [ImapConfigsAdminController, 'create']);
     router.patch('/imap-configs/:id', [ImapConfigsAdminController, 'update']);
     router.delete('/imap-configs/:id', [ImapConfigsAdminController, 'delete']);
