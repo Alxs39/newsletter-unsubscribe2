@@ -1,9 +1,7 @@
-import type { Session } from 'better-auth/types';
+import type { Session, User as BetterAuthUser } from 'better-auth/types';
 import type { HttpContext } from '@adonisjs/core/http';
-import type { auth } from '#services/auth';
 
-type SessionType = typeof auth.$Infer.Session;
-export type User = SessionType['user'];
+export type User = BetterAuthUser;
 
 declare module '@adonisjs/core/http' {
   interface HttpContext {
