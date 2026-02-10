@@ -1,8 +1,10 @@
 'use client';
 
-import { Tabs } from '@heroui/react';
-import { usePathname } from 'next/navigation';
+import { Button, Tabs } from '@heroui/react';
+import { LogOut } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 import Logo from '@/components/ui/logo';
+import authClient from '@/utils/auth-client';
 
 interface HeaderProps {
   isAdmin: boolean;
@@ -10,6 +12,7 @@ interface HeaderProps {
 
 export default function Header({ isAdmin }: HeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
 
   const selectedKey = pathname.startsWith('/admin')
     ? 'admin'
@@ -23,26 +26,37 @@ export default function Header({ isAdmin }: HeaderProps) {
         <Logo size={32} />
         <span className="font-semibold">Newsletter Unsubscribe</span>
       </div>
-      <Tabs selectedKey={selectedKey}>
-        <Tabs.ListContainer>
-          <Tabs.List>
-            <Tabs.Tab href="/" id="dashboard">
-              Dashboard
-              <Tabs.Indicator />
-            </Tabs.Tab>
-            <Tabs.Tab href="/settings" id="settings">
-              Settings
-              <Tabs.Indicator />
-            </Tabs.Tab>
-            {isAdmin && (
-              <Tabs.Tab href="/admin" id="admin">
-                Admin
+      <div className="flex items-center gap-4">
+        <Tabs selectedKey={selectedKey}>
+          <Tabs.ListContainer>
+            <Tabs.List>
+              <Tabs.Tab href="/" id="dashboard">
+                Dashboard
                 <Tabs.Indicator />
               </Tabs.Tab>
-            )}
-          </Tabs.List>
-        </Tabs.ListContainer>
-      </Tabs>
+              <Tabs.Tab href="/settings" id="settings">
+                Settings
+                <Tabs.Indicator />
+              </Tabs.Tab>
+              {isAdmin && (
+                <Tabs.Tab href="/admin" id="admin">
+                  Admin
+                  <Tabs.Indicator />
+                </Tabs.Tab>
+              )}
+            </Tabs.List>
+          </Tabs.ListContainer>
+        </Tabs>
+        <Button
+          variant="ghost"
+          size="sm"
+          onPress={() => {
+            void authClient.signOut().then(() => router.refresh());
+          }}
+        >
+          <LogOut className="h-4 w-4" />
+        </Button>
+      </div>
     </header>
   );
 }
