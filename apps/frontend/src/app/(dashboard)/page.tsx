@@ -15,11 +15,15 @@ export default async function DashboardPage() {
   const { data: accounts } = await api.get<ProviderAccountDto[]>('/provider-accounts');
 
   return (
-    <>
-      <SyncButton accounts={accounts} userId={session.user.id} />
-      <div className="mt-4">
-        <NewslettersTable data={emails} />
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Newsletters</h1>
+          <p className="mt-1 text-sm text-muted-fg">Manage and unsubscribe from your newsletters</p>
+        </div>
+        <SyncButton accounts={accounts} userId={session.user.id} />
       </div>
-    </>
+      <NewslettersTable data={emails} />
+    </div>
   );
 }

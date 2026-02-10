@@ -8,7 +8,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <>
       <Header isAdmin={session?.user?.role === 'admin'} />
-      {session ? children : <AuthGate />}
+      <main className="mx-auto w-9/12 py-8">{session ? children : <AuthGate />}</main>
     </>
   );
 }
