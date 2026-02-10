@@ -41,4 +41,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   ENCRYPTION_KEY: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for Redis (BullMQ queues)
+  |----------------------------------------------------------
+  */
+  REDIS_URL: Env.schema.string(),
 });

@@ -9,6 +9,21 @@ import { EncryptionService } from '#services/encryption_service';
 
 type SyncedEmail = typeof syncedEmails.$inferSelect;
 
+type OnProgressCallback = (progress: {
+  current: number;
+  total: number;
+  percentage: number;
+}) => void;
+
+interface FetchOptions {
+  uidValidityChanged: boolean;
+  storedModSeq: number | null;
+  storedHighestUid: number | null;
+  storedUidValidity: number | null;
+  currentUidValidity: number | null;
+  uidNext: number | null;
+}
+
 @inject()
 export class SyncedEmailService {
   constructor(
@@ -18,7 +33,8 @@ export class SyncedEmailService {
 
   async sync(
     providerAccountId: number,
-    userId: string
+    userId: string,
+    onProgress?: OnProgressCallback
   ): Promise<{ synced: number; skipped: number }> {
     const credentials = await this.providerAccountService.findById({
       id: providerAccountId,
@@ -60,14 +76,30 @@ export class SyncedEmailService {
           await this.invalidateAllSyncedEmails(providerAccountId);
         }
 
-        const messages = await this.fetchMessages(client, {
+        const fetchOpts: FetchOptions = {
           uidValidityChanged: !!uidValidityChanged,
           storedModSeq,
           storedHighestUid,
           storedUidValidity,
           currentUidValidity,
           uidNext: mailbox.uidNext ? Number(mailbox.uidNext) : null,
-        });
+        };
+
+        const total = this.estimateTotal(mailbox, fetchOpts);
+        const messages: FetchMessageObject[] = [];
+        let processed = 0;
+
+        for await (const msg of this.fetchMessagesStream(client, fetchOpts)) {
+          messages.push(msg);
+          processed++;
+          if (onProgress && total > 0) {
+            onProgress({
+              current: processed,
+              total,
+              percentage: Math.min(100, Math.round((processed / total) * 100)),
+            });
+          }
+        }
 
         if (messages.length === 0) {
           await this.providerAccountService.updateSyncState(providerAccountId, {
@@ -129,17 +161,10 @@ export class SyncedEmailService {
       .orderBy(syncedEmails.receivedAt);
   }
 
-  private async fetchMessages(
+  private async *fetchMessagesStream(
     client: ImapFlow,
-    opts: {
-      uidValidityChanged: boolean;
-      storedModSeq: number | null;
-      storedHighestUid: number | null;
-      storedUidValidity: number | null;
-      currentUidValidity: number | null;
-      uidNext: number | null;
-    }
-  ): Promise<FetchMessageObject[]> {
+    opts: FetchOptions
+  ): AsyncGenerator<FetchMessageObject> {
     const fetchQuery = {
       envelope: true,
       uid: true,
@@ -148,16 +173,22 @@ export class SyncedEmailService {
 
     // UIDVALIDITY changed: full refetch needed
     if (opts.uidValidityChanged) {
-      return client.fetchAll('1:*', fetchQuery, { uid: true });
+      for await (const msg of client.fetch('1:*', fetchQuery, { uid: true })) {
+        yield msg;
+      }
+      return;
     }
 
     // CONDSTORE diff sync: only messages changed since last modseq
     const hasCondstore = client.enabled.has('CONDSTORE');
     if (hasCondstore && opts.storedModSeq) {
-      return client.fetchAll('1:*', fetchQuery, {
+      for await (const msg of client.fetch('1:*', fetchQuery, {
         uid: true,
         changedSince: BigInt(opts.storedModSeq),
-      });
+      })) {
+        yield msg;
+      }
+      return;
     }
 
     // UID-based incremental: only new UIDs
@@ -166,13 +197,30 @@ export class SyncedEmailService {
 
     if (canIncrementalUid) {
       if (opts.uidNext && opts.uidNext > opts.storedHighestUid!) {
-        return client.fetchAll(`${opts.storedHighestUid! + 1}:*`, fetchQuery, { uid: true });
+        for await (const msg of client.fetch(`${opts.storedHighestUid! + 1}:*`, fetchQuery, {
+          uid: true,
+        })) {
+          yield msg;
+        }
       }
-      return [];
-    } else {
-      // First sync: full fetch
-      return client.fetchAll('1:*', fetchQuery, { uid: true });
+      return;
     }
+
+    // First sync: full fetch
+    for await (const msg of client.fetch('1:*', fetchQuery, { uid: true })) {
+      yield msg;
+    }
+  }
+
+  private estimateTotal(
+    mailbox: { exists?: number; uidNext?: number },
+    opts: FetchOptions
+  ): number {
+    if (opts.uidValidityChanged || !opts.storedHighestUid) {
+      return mailbox.exists ?? 0;
+    }
+    const uidNext = mailbox.uidNext ? Number(mailbox.uidNext) : 0;
+    return Math.max(0, uidNext - (opts.storedHighestUid + 1));
   }
 
   private async invalidateAllSyncedEmails(providerAccountId: number): Promise<void> {

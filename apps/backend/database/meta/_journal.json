@@ -43,6 +43,13 @@
       "when": 1770295649029,
       "tag": "20260205124729_alter_user_role_column",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1770732903711,
+      "tag": "20260210141503_add_sync_status_to_provider_accounts",
+      "breakpoints": true
     }
   ]
 }

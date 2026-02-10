@@ -126,4 +126,29 @@ export class ProviderAccountService {
       })
       .where(eq(providerAccounts.id, id));
   }
+
+  async updateSyncStatus(
+    id: number,
+    status: 'idle' | 'syncing' | 'failed',
+    error?: string | null
+  ): Promise<void> {
+    await db
+      .update(providerAccounts)
+      .set({
+        syncStatus: status,
+        syncError: status === 'failed' ? (error ?? null) : null,
+        ...(status === 'idle' ? { lastSyncAt: sql`NOW()` } : {}),
+      })
+      .where(eq(providerAccounts.id, id));
+  }
+
+  async resetStaleSyncStatuses(): Promise<void> {
+    await db
+      .update(providerAccounts)
+      .set({
+        syncStatus: 'failed',
+        syncError: 'Server restarted during sync',
+      })
+      .where(eq(providerAccounts.syncStatus, 'syncing'));
+  }
 }

@@ -48,6 +48,8 @@ export default defineConfig({
     () => import('#providers/encryption_provider'),
     () => import('#providers/drizzle_provider'),
     () => import('#providers/auth_provider'),
+    () => import('@adonisjs/transmit/transmit_provider'),
+    () => import('#providers/queue_provider'),
   ],
 
   /*
@@ -58,7 +60,11 @@ export default defineConfig({
   | List of modules to import before starting the application.
   |
   */
-  preloads: [() => import('#start/routes'), () => import('#start/kernel')],
+  preloads: [
+    () => import('#start/routes'),
+    () => import('#start/kernel'),
+    () => import('#start/transmit'),
+  ],
 
   /*
   |--------------------------------------------------------------------------

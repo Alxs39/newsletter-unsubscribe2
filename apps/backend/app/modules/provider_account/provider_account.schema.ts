@@ -20,6 +20,9 @@ export const providerAccounts = pgTable('provider_account', {
   lastUidValidity: bigint({ mode: 'number' }), // IMAP UIDVALIDITY - if changed, all UIDs are invalidated
   lastHighestUid: bigint({ mode: 'number' }), // Highest synced UID - fetch only newer messages
   lastModseq: bigint({ mode: 'number' }), // CONDSTORE modseq for change detection (future use)
+  // Sync status tracking
+  syncStatus: varchar('sync_status', { length: 20 }).notNull().default('idle'), // 'idle' | 'syncing' | 'failed'
+  syncError: varchar('sync_error', { length: 500 }),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   deletedAt: timestamp({ withTimezone: true }),
