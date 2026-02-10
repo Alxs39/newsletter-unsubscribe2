@@ -16,7 +16,7 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <SyncButton accounts={accounts} />
+      <SyncButton accounts={accounts} userId={session.user.id} />
       <div className="mt-4">
         <NewslettersTable data={emails} />
       </div>
