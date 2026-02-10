@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { Alert } from '@heroui/react';
-import { API_ERROR_EVENT, type ApiErrorDetail, type ApiErrorEvent } from '../types/api-error.types';
+import { API_ERROR_EVENT, type ApiErrorDetail, type ApiErrorEvent } from '@/types/api-error.types';
 
 const AUTO_DISMISS_DELAY = 5000;
 

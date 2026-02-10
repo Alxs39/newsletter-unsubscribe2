@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react';
 import { AxiosError, AxiosResponse } from 'axios';
-import apiClient from '../utils/api-clients';
-import { mapValidationErrors, isValidationError, FieldErrors } from '../utils/error-utils';
+import apiClient from '@/utils/api-client';
+import { mapValidationErrors, isValidationError, FieldErrors } from '@/utils/error-utils';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface MutationOptions<TData, TVariables> {
   url: string;
   method?: 'POST' | 'PUT' | 'PATCH' | 'DELETE';

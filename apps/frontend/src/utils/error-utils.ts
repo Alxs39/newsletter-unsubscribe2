@@ -29,9 +29,7 @@ export function isValidationError(
     'response' in error &&
     typeof (error as Record<string, unknown>).response === 'object' &&
     (error as Record<string, unknown>).response !== null &&
-    ((error as { response: { status: number } }).response?.status === 422) &&
-    Array.isArray(
-      (error as { response: { data: { errors: unknown[] } } }).response?.data?.errors
-    )
+    (error as { response: { status: number } }).response?.status === 422 &&
+    Array.isArray((error as { response: { data: { errors: unknown[] } } }).response?.data?.errors)
   );
 }

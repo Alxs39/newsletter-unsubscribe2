@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { dispatchApiError } from '../types/api-error.types';
+import { dispatchApiError } from '@/types/api-error.types';
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_API_URL,
@@ -17,7 +17,7 @@ apiClient.interceptors.response.use(
 
     if (statusCode && statusCode >= 500) {
       dispatchApiError({
-        message: 'Une erreur est survenue. Veuillez réessayer plus tard.',
+        message: 'An unexpected error occurred. Please try again later.',
         statusCode,
       });
     }
