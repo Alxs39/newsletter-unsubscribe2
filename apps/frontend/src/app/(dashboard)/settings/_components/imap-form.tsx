@@ -9,6 +9,8 @@ import {
   Form,
   Input,
   Label,
+  ListBox,
+  Select,
   TextField,
 } from '@heroui/react';
 import { Loader2 } from 'lucide-react';
@@ -69,25 +71,29 @@ export default function ImapForm({ imapConfigs }: { imapConfigs: ImapConfigDto[]
           </Alert>
         )}
         <FieldGroup>
-          <div className="flex flex-col gap-1">
+          <Select
+            placeholder="Select a provider..."
+            value={imapConfigId}
+            onChange={(v) => setImapConfigId(String(v))}
+            isRequired
+            isInvalid={!!getFieldError('imapConfigId')}
+          >
             <Label>Email Provider</Label>
-            <select
-              value={imapConfigId}
-              onChange={(e) => setImapConfigId(e.target.value)}
-              required
-              className="border-input bg-bg rounded-md border px-3 py-2 text-sm"
-            >
-              <option value="">Select a provider...</option>
-              {imapConfigs.map((config) => (
-                <option key={config.id} value={config.id}>
-                  {config.name}
-                </option>
-              ))}
-            </select>
-            {getFieldError('imapConfigId') && (
-              <span className="text-danger text-sm">{getFieldError('imapConfigId')}</span>
-            )}
-          </div>
+            <Select.Trigger>
+              <Select.Value />
+              <Select.Indicator />
+            </Select.Trigger>
+            <FieldError>{getFieldError('imapConfigId')}</FieldError>
+            <Select.Popover>
+              <ListBox>
+                {imapConfigs.map((config) => (
+                  <ListBox.Item key={config.id} id={String(config.id)}>
+                    {config.name}
+                  </ListBox.Item>
+                ))}
+              </ListBox>
+            </Select.Popover>
+          </Select>
           <TextField
             name="email"
             type="email"

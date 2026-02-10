@@ -5,8 +5,8 @@ export default function ProviderAccountsList({ data }: { data: ProviderAccountDt
   if (data.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 py-8">
-        <div className="bg-muted flex h-12 w-12 items-center justify-center rounded-full">
-          <Inbox className="text-muted-fg h-6 w-6" />
+        <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
+          <Inbox className="text-primary h-6 w-6" />
         </div>
         <div className="text-center">
           <p className="text-sm font-medium">No accounts connected</p>
@@ -21,7 +21,7 @@ export default function ProviderAccountsList({ data }: { data: ProviderAccountDt
       {data.map((account) => (
         <li key={account.id} className="flex items-center justify-between py-3">
           <div className="flex items-center gap-3">
-            <div className="bg-secondary/10 text-secondary flex h-9 w-9 items-center justify-center rounded-full">
+            <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-full">
               <Mail className="h-4 w-4" />
             </div>
             <div>
